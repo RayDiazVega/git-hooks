@@ -1,22 +1,17 @@
 #!/bin/bash
 
 echo "Running mvn clean test for errors"
-
 # retrieving current working directory
-CWD=`pwd`
 MAIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-# go to main project dir
+# go to main project directory
 cd $MAIN_DIR/../../
-# running maven clean test on new terminal
-start bash -c "mvn clean test ; read -rn1"
-# running maven clean test
-MVN_RESULT=$(mvn clean test 2>&1)
+# running maven clean test and store output in test-result.log file
+MVN_RESULT=$(mvn clean test > test-result.log 2>&1)
 if [ $? -ne 0 ]; then
-  echo
-  echo "Error while testing the code"
-  # go back to current working dir
-  cd $CWD
+  # display the content and delete test-result.log (start command for Windows)
+  start bash -c "cat test-result.log; rm test-result.log; read -rn1"
+  echo -e "\nError while testing the code"
   exit 1
 fi
-# go back to current working dir
-cd $CWD
+# delete test-result.log
+rm test-result.log
