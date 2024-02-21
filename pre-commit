@@ -5,13 +5,17 @@ echo "Running mvn clean test for errors"
 MAIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # go to main project directory
 cd $MAIN_DIR/../../
-# running maven clean test and store output in test-result.log file
-MVN_RESULT=$(mvn clean test > test-result.log 2>&1)
+# create temporary file
+TMP_FILE=$(mktemp)
+# running maven clean test and store output in temporary file
+MVN_RESULT=$(mvn clean test > "$TMP_FILE" 2>&1)
 if [ $? -ne 0 ]; then
-  # display the content and delete test-result.log (start command for Windows)
-  start bash -c "cat test-result.log; rm test-result.log; read -rn1"
+  # display the content and delete temporary file (start command for Windows)
+  start bash -c "cat $TMP_FILE; rm $TMP_FILE; read -rn1"
   echo -e "\nError while testing the code"
   exit 1
 fi
-# delete test-result.log
-rm test-result.log
+# delete temporary file
+rm $TMP_FILE
+echo -e "\nNo errors while testing the code, success"
+exit 0
